@@ -107,11 +107,11 @@ class SCTL
 
         http_response_code($statusCode);
 
-        $throwUnhandledException = function (int $statusCode) { 
-            throw new RuntimeException("Unhandled error for status {$statusCode}");
+        $throwUnhandledException = function () use ($statusCode, $identifier) {
+            throw new RuntimeException("Unhandled error for status [{$identifier}]: {$statusCode}");
         };
 
-        (is_callable($handler) && $handler()) || $throwUnhandledException($statusCode);
+        is_callable($handler) && $handler() || $throwUnhandledException();
     }
 
     /**
