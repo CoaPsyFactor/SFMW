@@ -5,8 +5,9 @@
  * 
  */
 
-require_once __DIR__ . '/STPL.php';
-require_once __DIR__ . '/SCTL.php';
+//require_once __DIR__ . '/STPL.php';
+//require_once __DIR__ . '/SCTL.php';
+require_once __DIR__ . '/vendor/autoload.php';
 
 SCTL::Post('login', function (string $username, string $password) {
 
