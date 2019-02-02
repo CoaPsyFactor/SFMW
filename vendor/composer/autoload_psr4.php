@@ -6,5 +6,5 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
-    'SFWM\\' => array($baseDir . '/src'),
+    'Simple\\' => array($baseDir . '/src'),
 );
