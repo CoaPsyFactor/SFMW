@@ -1,12 +1,13 @@
 <?php
 
+namespace Simple;
+
 /**
  * Very simple and easy to use PHP template engine.
  * Instead of working with fancy custom syntax, this engine relies on pure php and html
  */
-abstract class STPL
+abstract class Template
 {
-
     /**
      * @var array All existing sections for current template
      */
@@ -58,7 +59,7 @@ abstract class STPL
 
         if (empty($section) && $strict) {
 
-            throw new RuntimeException("Invalid section '{$sectionName}'");
+            throw new \RuntimeException("Invalid section '{$sectionName}'");
         }
 
         self::$sectionData[$sectionName] = $data;
@@ -75,7 +76,7 @@ abstract class STPL
 
         if (false === isset(self::$sectionsContent[$sectionName]) && $strict) {
 
-            throw new RuntimeException("Invalid section '{$sectionName}'");
+            throw new \RuntimeException("Invalid section '{$sectionName}'");
         }
 
         echo self::$sectionsContent[$sectionName] ?? '';
@@ -90,7 +91,7 @@ abstract class STPL
     {
         if (false === is_readable($partialPath)) {
 
-            throw new RuntimeException("Unable to read partia '{$partialPath}'");
+            throw new \RuntimeException("Unable to read partia '{$partialPath}'");
         }
 
         require_once $partialPath;
@@ -119,7 +120,7 @@ abstract class STPL
     {
         if (false === is_readable($baseTemplate)) {
 
-            throw new RuntimeException("Cannot read file '{$baseTemplate}'");
+            throw new \RuntimeException("Cannot read file '{$baseTemplate}'");
         }
 
         self::$baseTemplate = $baseTemplate;
@@ -127,32 +128,28 @@ abstract class STPL
 
     /**
      * Render single template into a string
-     * 
+     *
      * @param string $template Template that needs to be rendered
      * @param array $data Data that are passed to template callbacks
      * @param bool $dataPerSection Flag that determines are data global or per section
+     * @throws \ReflectionException
      */
     public static function Render(string $template, array $data = [], bool $dataPerSection = false): void
     {
 
         if (false === is_readable($template)) {
-
-            throw new RuntimeException("Unable to read template '{$template}'");
+            throw new \RuntimeException("Unable to read template '{$template}'");
         }
 
         require_once $template;
 
         if (null === self::$baseTemplate) {
-
-            throw new RuntimeException('Base Template not defined');
+            throw new \RuntimeException('Base Template not defined');
         }
 
         ob_start();
 
-        $sections = self::$sections;
-
-        foreach ($sections as $sectionName => $renderCallbacks) {
-
+        foreach (self::$sections as $sectionName => $renderCallbacks) {
             self::SetSectionData($sectionName, $dataPerSection ? ($data[$sectionName] ?? []) : $data);
 
             self::ExecuteRenderCallbacks($sectionName, $renderCallbacks);
@@ -166,11 +163,11 @@ abstract class STPL
     }
 
     /**
-     * 
      * Execute all section callbacks with proper arguments passed
-     * 
+     *
      * @param string $sectionName Name of section that is being processed
      * @param array $callbacks Functions that will be invoket to retrieve section content
+     * @throws \ReflectionException
      */
     private static function ExecuteRenderCallbacks(string $sectionName, array $callbacks)
     {
@@ -178,7 +175,6 @@ abstract class STPL
         $content = '';
 
         foreach ($callbacks as $callback) {
-
             $content .= self::InvokeSectionCallback($sectionName, $callback);
         }
         
@@ -186,38 +182,34 @@ abstract class STPL
     }
 
     /**
-     * 
      * Execute single section callback with proper arguments passed
-     * 
+     *
      * @param string $sectionName Name of section that is being processed
      * @param callable $callback Function that is being invoked
+     * @return string
+     * @throws \ReflectionException
      */
     private static function InvokeSectionCallback(string $sectionName, callable $callback): string
     {
-
-        $reflection = new ReflectionFunction($callback);
-
+        $reflection = new \ReflectionFunction($callback);
         $parameters = [];
 
         foreach ($reflection->getParameters() as $parameter) {
-        
             $parameterName = $parameter->getName();
 
             if (isset(self::$sectionData[$sectionName][$parameterName])) {
-
                 $parameters[] = self::$sectionData[$sectionName][$parameterName];
 
                 continue;
             }
 
             if ($parameter->isOptional()) {
-
                 $parameters[] = $parameter->getDefaultValue() ?? null;
 
                 continue;
             }
 
-            throw new RuntimeException("Missing parameter '{$parameterName}' for section '{$sectionName}' callback");
+            throw new \RuntimeException("Missing parameter '{$parameterName}' for section '{$sectionName}' callback");
         }
 
         ob_start();

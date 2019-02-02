@@ -7,36 +7,36 @@
 
 //require_once __DIR__ . '/STPL.php';
 //require_once __DIR__ . '/SCTL.php';
+use Simple\Controller;
+use Simple\Template;
+
 require_once __DIR__ . '/vendor/autoload.php';
 
-SCTL::Post('login', function (string $username, string $password) {
+Controller::Post('login', function (string $username, string $password) {
 
     /**
      * Username and password will be retrieved from $_POST :)
      */
     var_dump($username, $password);
 
-    STPL::Render(__DIR__ . '/example_template/pages/login.php');
+    Template::Render(__DIR__ . '/example_template/pages/login.php');
 });
 
-SCTL::Get('login', function (string $username = '') {
-
-    STPL::Render(__DIR__ . '/example_template/pages/login.php', ['username' => $username]);
+Controller::Get('login', function (string $username = '') {
+    Template::Render(__DIR__ . '/example_template/pages/login.php', ['username' => $username]);
 });
 
-SCTL::RegisterErrorHandler(SCTL::STATUS_BADREQUEST, function () {
-
-    STPL::Render(__DIR__ . '/example_template/errors/400.php');
+Controller::RegisterErrorHandler(Controller::STATUS_BAD_REQUEST, function () {
+    Template::Render(__DIR__ . '/example_template/errors/400.php');
 
     return true;
 });
 
-SCTL::RegisterErrorHandler(SCTL::STATUS_NOTFOUND, function () {
-
-    STPL::Render(__DIR__ . '/example_template/errors/404.php');
+Controller::RegisterErrorHandler(Controller::STATUS_NOT_FOUND, function () {
+    Template::Render(__DIR__ . '/example_template/errors/404.php');
 
     return true;
 });
 
 
-SCTL::Run($_GET['action'] ?? 'home');
+Controller::Run($_GET['action'] ?? 'home');

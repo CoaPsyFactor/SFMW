@@ -1,13 +1,16 @@
-<!-- set template used as base for current view-->
-<?php STPL::SetBase(__DIR__ . '/../base.php'); ?>
+<?php
 
-<!-- set partials included with current view -->
-<?php STPL::Partials([__DIR__ . '/../partials/top.php', __DIR__ . '/../partials/bottom.php']); ?>
+use Simple\Template;
 
-<!-- section example  using pure php -->
-<?php STPL::SectionContent('title', function () { echo 'STPL - Bad Input'; }); ?>
+// set template used as base for current view
+Template::SetBase(__DIR__ . '/../base.php');
 
-<!-- section example using pure php combined with plain html -->
-<?php STPL::SectionContent('content', function (string $username = '') { ?>
-    Snap! This page doesn't exists around here...
-<?php }); ?>
+// set partials included with current view
+Template::Partials([__DIR__ . '/../partials/top.php', __DIR__ . '/../partials/bottom.php']);
+
+// section example  using pure php
+Template::SectionContent('title', function () { echo 'STPL - Bad Input'; });
+
+Template::SectionContent('content', function () {
+    echo 'Snap! This page doesn\'t exists around here...';
+});
