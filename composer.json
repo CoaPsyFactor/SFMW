@@ -1,5 +1,5 @@
 {
-    "name": "webactionhandler/template",
+    "name": "webactionhandler/framework_lite",
     "description": "Simple plain PHP/HTML template engine",
     "type": "library",
     "require": {
