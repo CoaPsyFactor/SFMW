@@ -3,7 +3,8 @@
     "description": "Simple plain PHP/HTML template engine",
     "type": "library",
     "require": {
-        "php": ">=7.2"
+        "php": ">=7.2",
+        "ext-pdo": "*"
     },
     "license": "Apache-2.0",
     "authors": [

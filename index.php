@@ -1,42 +1,26 @@
 <?php
 
-/**
- * TODO: DO NOT REPEAT YOURSELF!!!! MOVE DUPLICATE - REFACTOR SIMILAR !!!!
- * 
- */
-
-//require_once __DIR__ . '/STPL.php';
-//require_once __DIR__ . '/SCTL.php';
-use Simple\Controller;
-use Simple\Template;
+use Simple\Database;
+use Simple\Framework;
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-Controller::Post('login', function (string $username, string $password) {
+Framework::Initialize([
+    'database' => [
+        'driver' => 'mysql', 'host' => 'localhost', 'port' => 3306,
+        'user' => 'root', 'password' => '', 'schema' => 'retroad']
+]);
 
-    /**
-     * Username and password will be retrieved from $_POST :)
-     */
-    var_dump($username, $password);
+Framework::On('home', function () {
+    $users = Database::fetch('SELECT * FROM `users` WHERE `username` = :username', [':username' => 'coa']);
 
-    Template::Render(__DIR__ . '/example_template/pages/login.php');
+    var_dump($users);
 });
 
-Controller::Get('login', function (string $username = '') {
-    Template::Render(__DIR__ . '/example_template/pages/login.php', ['username' => $username]);
+Framework::Catch(RuntimeException::class, function (RuntimeException $exception) {
+    echo 'Got error ' . $exception->getMessage();
 });
 
-Controller::RegisterErrorHandler(Controller::STATUS_BAD_REQUEST, function () {
-    Template::Render(__DIR__ . '/example_template/errors/400.php');
-
-    return true;
-});
-
-Controller::RegisterErrorHandler(Controller::STATUS_NOT_FOUND, function () {
-    Template::Render(__DIR__ . '/example_template/errors/404.php');
-
-    return true;
-});
-
-
-Controller::Run($_GET['action'] ?? 'home');
+Framework::Trigger(
+    filter_input(INPUT_GET, 'route', FILTER_DEFAULT, ['options' => ['default' => 'home']])
+);

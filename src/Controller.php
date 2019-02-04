@@ -5,14 +5,18 @@ namespace Simple;
 abstract class Controller
 {
     public const STATUS_OK = 200;
+    public const STATUS_NO_CONTENT = 204;
     public const STATUS_BAD_REQUEST = 400;
     public const STATUS_UNAUTHENTICATED = 401;
     public const STATUS_FORBIDDEN = 403;
     public const STATUS_NOT_FOUND = 404;
     public const STATUS_INTERNAL = 500;
 
-    private const METHOD_GET = 'GET';
-    private const METHOD_POST = 'POST';
+    public const INVALID_STATUS_CODE = -1;
+    public const MISSING_PARAMETER_ID = 0;
+
+    public const METHOD_GET = 'GET';
+    public const METHOD_POST = 'POST';
 
     private const GLOBAL_ERROR_ID = '_global';
 
@@ -35,7 +39,6 @@ abstract class Controller
     {
         self::Route(self::METHOD_GET, $identifier, $callback);
     }
-
 
     /**
      * Register POST handler
@@ -70,9 +73,17 @@ abstract class Controller
             return;
         }
 
-        if (false === self::InvokeControlCallback($callback)) {
+        $status = self::InvokeControlCallback($callback);
+
+        if (self::INVALID_STATUS_CODE === $status) {
+            throw new \RuntimeException("{$method} handler for {$identifier} must return integer (status code)");
+        } else if (self::MISSING_PARAMETER_ID === $status) {
             self::TriggerErrorHandler(self::STATUS_BAD_REQUEST, $identifier);
+
+            return;
         }
+
+        http_response_code($status);
     }
 
     /**
@@ -98,6 +109,7 @@ abstract class Controller
     public static function TriggerErrorHandler(int $statusCode, string $id = null): void
     {
         http_response_code($statusCode);
+
         (
             self::$errorHandlers[$id][$statusCode] ??
             (
@@ -137,10 +149,10 @@ abstract class Controller
      * Execute handle callback for current request action (route)
      *
      * @param callable $callback Action handle that needs to be executed
-     * @return bool
+     * @return int
      * @throws \ReflectionException
      */
-    private static function InvokeControlCallback(callable $callback): bool
+    private static function InvokeControlCallback(callable $callback): int
     {
         $inputParameters = filter_input_array(
             $_SERVER['REQUEST_METHOD'] === self::METHOD_GET ? INPUT_GET : INPUT_POST
@@ -164,11 +176,11 @@ abstract class Controller
                 continue;
             }
 
-            return false;
+            return self::MISSING_PARAMETER_ID;
         }
 
-        $reflection->invokeArgs($parameters);
+        $status = $reflection->invokeArgs($parameters) ?? self::STATUS_OK;
 
-        return true;
+        return is_int($status) ? $status : self::INVALID_STATUS_CODE;
     }
 }

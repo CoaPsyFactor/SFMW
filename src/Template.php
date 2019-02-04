@@ -24,7 +24,7 @@ abstract class Template
     private static $sectionData = [];
 
     /**
-     * @var string Base templated used for currently rendering template
+     * @var string Base template used for currently rendering template
      */
     private static $baseTemplate = null;
 
@@ -36,9 +36,7 @@ abstract class Template
      */
     public static function SectionContent(string $sectionName, callable $renderCallback): void
     {
-
         if (empty(self::$sections[$sectionName])) {
-
             self::$sections[$sectionName] = [];
         }
 
@@ -54,11 +52,9 @@ abstract class Template
      */
     public static function SetSectionData(string $sectionName, array $data, bool $strict = false): void
     {
-
         $section = self::$sections[$sectionName] ?? [];
 
         if (empty($section) && $strict) {
-
             throw new \RuntimeException("Invalid section '{$sectionName}'");
         }
 
@@ -73,9 +69,7 @@ abstract class Template
      */
     public static function RenderSection(string $sectionName, bool $strict = false): void
     {
-
         if (false === isset(self::$sectionsContent[$sectionName]) && $strict) {
-
             throw new \RuntimeException("Invalid section '{$sectionName}'");
         }
 
@@ -90,7 +84,6 @@ abstract class Template
     public static function Partial(string $partialPath): void
     {
         if (false === is_readable($partialPath)) {
-
             throw new \RuntimeException("Unable to read partia '{$partialPath}'");
         }
 
@@ -104,9 +97,7 @@ abstract class Template
      */
     public static function Partials(array $paths): void
     {
-
         foreach ($paths as $path) {
-
             self::Partial($path);
         }
     }
@@ -119,7 +110,6 @@ abstract class Template
     public static function SetBase(string $baseTemplate): void
     {
         if (false === is_readable($baseTemplate)) {
-
             throw new \RuntimeException("Cannot read file '{$baseTemplate}'");
         }
 
@@ -136,7 +126,6 @@ abstract class Template
      */
     public static function Render(string $template, array $data = [], bool $dataPerSection = false): void
     {
-
         if (false === is_readable($template)) {
             throw new \RuntimeException("Unable to read template '{$template}'");
         }
@@ -171,7 +160,6 @@ abstract class Template
      */
     private static function ExecuteRenderCallbacks(string $sectionName, array $callbacks)
     {
-
         $content = '';
 
         foreach ($callbacks as $callback) {
