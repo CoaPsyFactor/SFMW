@@ -20,7 +20,7 @@ Framework::RegisterPage('post', '/views/pages/post/index.phtml', '/controllers/p
 Framework::RegisterControl('post_update', '/controllers/post/edit.php', 'post');
 
 Framework::RegisterErrorPage(
-    StatusCode::FORBIDDEN, require_once __DIR__ . '/src/errors/generic.php'
+    StatusCode::FORBIDDEN, require_once __DIR__ . '/src/views/pages/error/generic.phtml'
 );
 
 Framework::Catch(RuntimeException::class, function (RuntimeException $exception) {
