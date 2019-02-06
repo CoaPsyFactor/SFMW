@@ -1,0 +1,18 @@
+<?php
+
+use Simple\Template;
+
+//<!-- set template used as base for current view-->
+Template::SetBase(__DIR__ . '/../../base.phtml');
+
+//<!-- set partials included with current view -->
+Template::Partials([__DIR__ . '/../../layout/header.phtml', __DIR__ . '/../../layout/footer.phtml']);
+
+//<!-- section example  using pure php -->
+Template::SectionContent('title', function (int $status) {
+    echo "Error {$status}";
+});
+
+Template::SectionContent('content', function (int $status, string $message) {
+    echo "Request finished with status {$status}. Message: {$message}";
+});

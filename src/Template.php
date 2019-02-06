@@ -84,7 +84,7 @@ abstract class Template
     public static function Partial(string $partialPath): void
     {
         if (false === is_readable($partialPath)) {
-            throw new \RuntimeException("Unable to read partia '{$partialPath}'");
+            throw new \RuntimeException("Unable to read partial '{$partialPath}'");
         }
 
         require_once $partialPath;

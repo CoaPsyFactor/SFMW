@@ -22,7 +22,7 @@ abstract class Database
      *
      * @param array $config
      */
-    public static function addConnection(array $config): void
+    public static function AddConnection(array $config): void
     {
         $name = $config['name'] ?? self::DEFAULT_CONNECTION_NAME;
 
@@ -43,10 +43,10 @@ abstract class Database
      * @param string $connectionName Name of connection
      * @return \PDO
      */
-    public static function getConnection(string $connectionName = self::DEFAULT_CONNECTION_NAME): \PDO
+    public static function GetConnection(string $connectionName = self::DEFAULT_CONNECTION_NAME): \PDO
     {
         if (false === (self::$connections[$connectionName] ?? null) instanceof \PDO) {
-            self::connect($connectionName);
+            self::Connect($connectionName);
         }
 
         return self::$connections[$connectionName];
@@ -60,11 +60,11 @@ abstract class Database
      * @param string $connectionName
      * @return array|null
      */
-    public static function fetch(
+    public static function Fetch(
         string $query, array $placeholders = [], string $connectionName = self::DEFAULT_CONNECTION_NAME
     ): ?array
     {
-        $statement = self::prepareAndExecute(self::getConnection($connectionName), $query, $placeholders);
+        $statement = self::PrepareAndExecute(self::GetConnection($connectionName), $query, $placeholders);
 
         if (null === $statement) {
             return null;
@@ -83,11 +83,11 @@ abstract class Database
      * @param string $connectionName
      * @return array
      */
-    public static function fetchAll(
+    public static function FetchAll(
         string $query, array $placeholders = [], string $connectionName = self::DEFAULT_CONNECTION_NAME
     ): ?array
     {
-        $statement = self::prepareAndExecute(self::getConnection($connectionName), $query, $placeholders);
+        $statement = self::PrepareAndExecute(self::GetConnection($connectionName), $query, $placeholders);
 
         if (null === $statement) {
             return null;
@@ -99,6 +99,26 @@ abstract class Database
     }
 
     /**
+     * @param string $query Storing query
+     * @param array $placeholders
+     * @param string $connectionName
+     * @return int|null
+     */
+    public static function Store(
+        string $query, array $placeholders = [], string $connectionName = self::DEFAULT_CONNECTION_NAME
+    ): ?int
+    {
+        $connection = self::GetConnection($connectionName);
+        $statement = self::PrepareAndExecute($connection, $query, $placeholders);
+
+        if (null === $statement) {
+            return null;
+        }
+
+        return empty($connection->lastInsertId()) ? $statement->rowCount() : $connection->lastInsertId();
+    }
+
+    /**
      * Prepare and execute PDO statement if possible
      *
      * @param \PDO $connection
@@ -106,9 +126,9 @@ abstract class Database
      * @param array $placeholders
      * @return \PDOStatement|null
      */
-    private static function prepareAndExecute(\PDO $connection, string $query, array $placeholders = []): ?\PDOStatement
+    private static function PrepareAndExecute(\PDO $connection, string $query, array $placeholders = []): ?\PDOStatement
     {
-        $statement = self::prepare($connection, $query, $placeholders);
+        $statement = self::Prepare($connection, $query, $placeholders);
 
         if (null === $statement) {
             return null;
@@ -129,7 +149,7 @@ abstract class Database
      * @param array $placeholders
      * @return \PDOStatement|null
      */
-    private static function prepare(\PDO $connection, string $query, array $placeholders = []): ?\PDOStatement
+    private static function Prepare(\PDO $connection, string $query, array $placeholders = []): ?\PDOStatement
     {
         $statement = $connection->prepare($query);
 
@@ -138,7 +158,7 @@ abstract class Database
         }
 
         foreach ($placeholders as $placeholder => $value) {
-            $statement->bindParam($placeholder, $value);
+            $statement->bindValue($placeholder, $value);
         }
 
         return $statement;
@@ -148,7 +168,7 @@ abstract class Database
      * @param string $connectionName Name under which configuration is stored
      * @return void
      */
-    private static function connect(string $connectionName = self::DEFAULT_CONNECTION_NAME): void
+    private static function Connect(string $connectionName = self::DEFAULT_CONNECTION_NAME): void
     {
         if (empty(self::$configurations[$connectionName])) {
             throw new \RuntimeException("Invalid connection '{$connectionName}'.");
