@@ -1,5 +1,0 @@
-<form method="post" action="?page=post_update&postId=<?php echo $post['id']; ?>">
-    <input type="text" id="post[title]" name="post[title]" value="<?php echo $post['title'] ?? ''; ?>"/>
-    <textarea id="post[content]" name="post[content]"><?php echo $post['content'] ?? ''; ?></textarea>
-    <button type="submit" id="post[save]" name="post[save]">Save</button>
-</form>
