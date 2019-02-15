@@ -32,6 +32,9 @@ class Framework
     /** @var Framework|null */
     private static $initialized = null;
 
+    /**
+     * Prevent direct instantiating
+     */
     private function __construct()
     {
     }

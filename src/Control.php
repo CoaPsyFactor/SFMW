@@ -2,7 +2,7 @@
 
 namespace Simple;
 
-abstract class Control
+class Control
 {
 
 
@@ -15,6 +15,13 @@ abstract class Control
         self::METHOD_GET => [],
         self::METHOD_POST => [],
     ];
+
+    /**
+     * Prevent direct instantiating
+     */
+    private function __construct()
+    {
+    }
 
     /**
      * Register GET handler

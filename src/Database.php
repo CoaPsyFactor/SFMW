@@ -2,7 +2,7 @@
 
 namespace Simple;
 
-abstract class Database
+class Database
 {
     public const DEFAULT_CONNECTION_NAME = 'default';
     public const DEFAULT_DRIVER = 'mysql';
@@ -16,6 +16,13 @@ abstract class Database
 
     /** @var array */
     private static $configurations = [];
+
+    /**
+     * Prevent direct instantiating
+     */
+    private function __construct()
+    {
+    }
 
     /**
      * Prepare connection

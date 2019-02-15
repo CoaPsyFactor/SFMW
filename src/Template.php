@@ -6,7 +6,7 @@ namespace Simple;
  * Very simple and easy to use PHP template engine.
  * Instead of working with fancy custom syntax, this engine relies on pure php and html
  */
-abstract class Template
+class Template
 {
     /**
      * @var array All existing sections for current template
@@ -27,6 +27,13 @@ abstract class Template
      * @var string Base template used for currently rendering template
      */
     private static $baseTemplate = null;
+
+    /**
+     * Prevent direct instantiating
+     */
+    private function __construct()
+    {
+    }
 
     /**
      * Set content of section, callback return value will be used as content
