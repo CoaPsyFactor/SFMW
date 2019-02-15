@@ -91,11 +91,11 @@ class Framework
      * Add handler when request finishes with flag "error=true"
      *
      * @param int $statusCode Status code that will trigger provided callback
-     * @param callable $callback Callback that will be executed
+     * @param string $viewPath Path to view (template) file
      */
-    public static function RegisterErrorPage(int $statusCode, callable $callback): void
+    public static function RegisterErrorPage(int $statusCode, string $viewPath): void
     {
-        self::$errorHandlers[$statusCode] = $callback;
+        self::$errorHandlers[$statusCode] = $viewPath;
     }
 
     /**
@@ -209,19 +209,26 @@ class Framework
     }
 
     /**
-     * Handle response error
-     *
      * @param array $result
+     * @throws \ReflectionException
      */
     private static function HandleTriggerError(array $result): void
     {
-        $callback = self::$errorHandlers[$result['status'] ?? StatusCode::INTERNAL] ?? null;
+        $viewPath = self::$errorHandlers[$result['status'] ?? StatusCode::INTERNAL] ?? null;
 
-        (is_callable($callback) ? $callback : function (array $result) {
+        if (null !== $viewPath && false === is_readable($viewPath)) {
+            self::Throw(new \RuntimeException("Invalid path {$viewPath}"));
+
+            return;
+        } else if (null === $viewPath) {
             ['status' => $status, 'message' => $message] = $result;
 
             self::Throw(new \RuntimeException("Request failed with status {$status}. {$message}"));
-        })($result);
+
+            return;
+        }
+
+        Template::Render($viewPath, $result);
     }
 
     /**

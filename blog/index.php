@@ -18,10 +18,9 @@ Framework::Initialize([
 Framework::RegisterPage('post', '/views/pages/post/index.phtml', '/controllers/post/view.php');
 Framework::RegisterControl('post_update', '/controllers/post/edit.php', 'post');
 
-Framework::RegisterErrorPage(
-    StatusCode::FORBIDDEN, require_once __DIR__ . '/src/views/pages/error/generic.phtml'
-);
+Framework::RegisterErrorPage(StatusCode::FORBIDDEN, __DIR__ . '/src/views/pages/error/generic.phtml');
+Framework::RegisterErrorPage(StatusCode::NOT_FOUND, __DIR__ . '/src/views/pages/error/generic.phtml');
 
 Framework::Catch(RuntimeException::class, function (RuntimeException $exception) {
-    echo 'Got error ' . $exception->getMessage();
+    echo $exception->getMessage();
 });
