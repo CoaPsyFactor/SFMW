@@ -15,7 +15,6 @@ Framework::Initialize([
         'user' => 'root', 'password' => '', 'schema' => 'retroad']
 ]);
 
-
 Framework::RegisterPage('post', '/views/pages/post/index.phtml', '/controllers/post/view.php');
 Framework::RegisterControl('post_update', '/controllers/post/edit.php', 'post');
 

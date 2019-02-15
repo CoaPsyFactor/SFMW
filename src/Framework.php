@@ -84,12 +84,7 @@ class Framework
      */
     public static function Throw(\Exception $exception): void
     {
-        (
-            self::$exceptionHandlers[get_class($exception)] ??
-            function (\Exception $exception) {
-                throw $exception;
-            }
-        )($exception);
+        (self::$exceptionHandlers[get_class($exception)] ?? function (\Exception $e) { throw $e;})($exception);
     }
 
     /**
@@ -149,20 +144,20 @@ class Framework
         $controller = self::$rootDirectory . $controller;
 
         if (false === is_readable($controller)) {
-            throw new \RuntimeException("Invalid controller path '{$controller}'");
+            self::Throw(new \RuntimeException("Invalid controller path '{$controller}'"));
         }
 
         /** @var \Closure $control */
         $control = require $controller;
 
         if (false === $control instanceof \Closure) {
-            throw new \RuntimeException("Invalid control {$controller}");
+            self::Throw(new \RuntimeException("Invalid control {$controller}"));
         }
 
         $returnType = (new \ReflectionFunction($control))->getReturnType();
 
         if (null === $returnType || strcmp($returnType, 'array')) {
-            throw new \RuntimeException("Control return value must be an array. {$controller}");
+            self::Throw(new \RuntimeException("Control return value must be an array. {$controller}"));
         }
 
         return $control;
@@ -208,25 +203,25 @@ class Framework
             is_int($result['status'] ?? false) ? $result['status'] : StatusCode::INTERNAL
         );
 
-        if ($result['error'] ?? false) {
-            (function (array $result) {
-                $callback = self::$errorHandlers[$result['status'] ?? StatusCode::INTERNAL] ?? null;
-
-                if (is_callable($callback)) {
-                    $callback($result);
-
-                    return;
-                }
-
-                throw new \RuntimeException(
-                    "Request failed with status {$result['status']}. {$result['message']}"
-                );
-            })($result);
-
-            return;
-        }
+        ($result['error'] ?? false) && self::HandleTriggerError($result);
 
         self::Finish($page, $result);
+    }
+
+    /**
+     * Handle response error
+     *
+     * @param array $result
+     */
+    private static function HandleTriggerError(array $result): void
+    {
+        $callback = self::$errorHandlers[$result['status'] ?? StatusCode::INTERNAL] ?? null;
+
+        (is_callable($callback) ? $callback : function (array $result) {
+            ['status' => $status, 'message' => $message] = $result;
+
+            self::Throw(new \RuntimeException("Request failed with status {$status}. {$message}"));
+        })($result);
     }
 
     /**
