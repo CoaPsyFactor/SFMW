@@ -30,11 +30,27 @@ abstract class Database
             throw new \RuntimeException('Missing schema parameter (database name)');
         }
 
+        if (false === empty(self::$configurations[$name])) {
+            throw new \RuntimeException("Connection {$name} already added.");
+        }
+
         self::$configurations[$name] = [
             'driver' => $config['driver'] ?? self::DEFAULT_DRIVER, 'host' => $config['host'] ?? self::DEFAULT_HOST,
             'port' => $config['port'] ?? self::DEFAULT_PORT, 'user' => $config['user'] ?? self::DEFAULT_USER,
             'password' => $config['password'] ?? self::DEFAULT_PASSWORD, 'schema' => $config['schema'] ?? null,
         ];
+    }
+
+    /**
+     * Add multiple connections
+     *
+     * @param array $configs
+     */
+    public static function AddConnections(array $configs): void
+    {
+        foreach ($configs as $config) {
+            self::AddConnection($config);
+        }
     }
 
     /**
