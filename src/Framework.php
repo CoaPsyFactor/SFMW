@@ -2,9 +2,9 @@
 
 namespace Simple;
 
-
 class Framework
 {
+
     /** @var string */
     public const DEFAULT_PAGE_IDENTIFIER = 'page';
 
@@ -37,6 +37,7 @@ class Framework
      */
     private function __construct()
     {
+
     }
 
     /**
@@ -87,7 +88,9 @@ class Framework
      */
     public static function Throw(\Exception $exception): void
     {
-        (self::$exceptionHandlers[get_class($exception)] ?? function (\Exception $e) { throw $e;})($exception);
+        (self::$exceptionHandlers[get_class($exception)] ?? function (\Exception $e) {
+            throw $e;
+        })($exception);
     }
 
     /**
@@ -151,7 +154,10 @@ class Framework
         }
 
         /** @var \Closure $control */
-        $control = require $controller;
+        $control = (function ($controller) {
+                // By loading file in closure we made sure that variables defined in it are isolated from parent context
+                return require $controller;
+            })($controller);
 
         if (false === $control instanceof \Closure) {
             self::Throw(new \RuntimeException("Invalid control {$controller}"));
@@ -257,4 +263,5 @@ class Framework
             header("Location: {$url}");
         }
     }
+
 }
