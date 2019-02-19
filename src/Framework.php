@@ -243,7 +243,11 @@ class Framework
      */
     private static function Finish(string $page, array $result): void
     {
-        (self::$requestTemplates[$page] ?? false) && Template::Render(self::$requestTemplates[$page], $result);
+        if (self::$requestTemplates[$page] ?? false) {
+            Template::Render(self::$requestTemplates[$page], $result);
+
+            return;
+        }
 
         if (self::$requestRedirects[$page] ?? false) {
             $query = http_build_query([self::$pageIdentifier => self::$requestRedirects[$page]] + $result);
