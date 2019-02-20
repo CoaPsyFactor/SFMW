@@ -186,7 +186,7 @@ class Framework
      *
      * @throws \ReflectionException
      */
-    private static function Trigger(): void
+    public static function Trigger(): void
     {
         $page = $_REQUEST[self::$pageIdentifier] ?? '';
 
