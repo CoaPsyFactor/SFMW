@@ -72,16 +72,6 @@ class Framework
     }
 
     /**
-     * Used to trigger render and output at request ending
-     *
-     * @throws \ReflectionException
-     */
-    public function __destruct()
-    {
-        self::Trigger();
-    }
-
-    /**
      * Throw exception that is handled by "Framework::Catch"
      *
      * @param \Exception $exception
