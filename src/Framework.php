@@ -186,7 +186,7 @@ class Framework
      *
      * @throws \ReflectionException
      */
-    public static function Trigger(string? $route = null): void
+    public static function Trigger(?string $route = null): void
     {
         $page = $route ?? ($_REQUEST[self::$pageIdentifier] ?? '');
 
