@@ -186,9 +186,9 @@ class Framework
      *
      * @throws \ReflectionException
      */
-    public static function Trigger(): void
+    public static function Trigger(string? $route = null): void
     {
-        $page = $_REQUEST[self::$pageIdentifier] ?? '';
+        $page = $route ?? ($_REQUEST[self::$pageIdentifier] ?? '');
 
         try {
             $result = Control::Run($page) ?? ['status' => StatusCode::INTERNAL, 'message' => 'Something went wrong.'];
